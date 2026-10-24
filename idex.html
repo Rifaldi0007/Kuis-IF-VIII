@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuis Analisis Data – Informatika Kelas 8</title>
+<style>
+:root{--bg:#eef2ff;--card:#fff;--ink:#1e1b4b;--mut:#64748b;--pri:#4f46e5;--pri2:#3730a3;--ok:#16a34a;--bad:#dc2626;--line:#e2e8f0;--warn:#f59e0b}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(160deg,#eef2ff,#e0f2fe);color:var(--ink);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+.wrap{max-width:860px;margin:0 auto;padding:18px}
+.card{background:var(--card);border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(30,27,75,.10)}
+h1{font-size:1.6rem;margin:0 0 4px}
+h2{margin:0 0 8px}
+.sub{color:var(--mut);margin:0 0 18px}
+.hide{display:none!important}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input[type=text]{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:1rem;outline:none}
+input[type=text]:focus{border-color:var(--pri)}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-size:1rem;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--pri2)}
+.btn.g{background:#e2e8f0;color:var(--ink)}
+.btn.g:hover{background:#cbd5e1}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.rules{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin:18px 0;font-size:.92rem;line-height:1.55}
+.rules b{color:#92400e}
+.err{color:var(--bad);font-size:.9rem;margin-top:8px;min-height:1.2em}
+.top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.who{font-size:.9rem;color:var(--mut)}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.3rem;background:#e0e7ff;color:var(--pri2);padding:8px 16px;border-radius:999px}
+.timer.low{background:#fee2e2;color:var(--bad);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.55}}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#06b6d4);transition:width .3s}
+.qn{font-weight:700;color:var(--pri)}
+.qt{font-size:1.1rem;line-height:1.55;margin:8px 0 16px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:1rem;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:#a5b4fc}
+.opt .l{flex:0 0 30px;height:30px;border-radius:50%;background:#eef2ff;color:var(--pri2);font-weight:700;display:grid;place-items:center}
+.opt.sel{border-color:var(--pri);background:#eef2ff}
+.opt.sel .l{background:var(--pri);color:#fff}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:18px}
+.grid button{border:2px solid var(--line);background:#fff;border-radius:8px;padding:7px 0;font-weight:600;cursor:pointer;color:var(--ink)}
+.grid button.done{background:#dcfce7;border-color:#86efac}
+.grid button.cur{border-color:var(--pri);box-shadow:0 0 0 2px #c7d2fe}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.92);display:grid;place-items:center;padding:20px;z-index:50}
+.ov .box{background:#fff;border-radius:18px;padding:26px;max-width:440px;text-align:center}
+.ov .em{font-size:3rem}
+.result{text-align:center}
+.score{font-size:3.4rem;font-weight:800;color:var(--pri)}
+canvas#cv{width:100%;max-width:760px;border-radius:10px;border:1px solid var(--line);margin:14px 0}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.note{color:var(--mut);font-size:.85rem;margin-top:8px}
+@media(max-width:560px){.grid{grid-template-columns:repeat(5,1fr)}.card{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HALAMAN NAMA & KELAS -->
+<div id="sStart" class="card hide">
+  <h1>📊 Kuis Analisis Data</h1>
+  <p class="sub">Informatika Kelas 8 · Pengelompokan &amp; Pengolahan Data</p>
+  <label for="nm">Nama Lengkap</label>
+  <input type="text" id="nm" maxlength="40" placeholder="Tulis nama lengkapmu" autocomplete="off">
+  <label for="kl">Kelas</label>
+  <input type="text" id="kl" maxlength="10" placeholder="Contoh: 8A" autocomplete="off">
+  <div class="rules">
+    <b>Aturan kuis:</b><br>
+    • 20 soal pilihan ganda · waktu <b>25 menit</b> (otomatis selesai saat waktu habis)<br>
+    • Dilarang membuka tab/aplikasi lain. Keluar dari halaman kuis <b>3 kali</b> = kuis berakhir otomatis.<br>
+    • Aplikasi ini tidak bisa dibuka di dua tab sekaligus.<br>
+    • Setelah selesai, kamu bisa mengunduh sertifikat hasil.
+  </div>
+  <div class="err" id="err"></div>
+  <button class="btn" id="bStart">Mulai Kuis</button>
+</div>
+
+<!-- HALAMAN KUIS -->
+<div id="sQuiz" class="card hide">
+  <div class="top">
+    <div class="who" id="who"></div>
+    <div class="timer" id="tm">25:00</div>
+  </div>
+  <div class="bar"><i id="pg"></i></div>
+  <div class="qn" id="qn"></div>
+  <div class="qt" id="qt"></div>
+  <div id="qo"></div>
+  <div class="nav">
+    <button class="btn g" id="bPrev">← Sebelumnya</button>
+    <button class="btn" id="bNext">Berikutnya →</button>
+  </div>
+  <div class="grid" id="gd"></div>
+  <div style="text-align:center;margin-top:18px"><button class="btn" id="bEnd" style="background:var(--bad)">🏁 End Test</button></div>
+</div>
+
+<!-- HASIL -->
+<div id="sRes" class="card result hide">
+  <h2 id="rh">Kuis Selesai!</h2>
+  <div class="score" id="rs"></div>
+  <div id="rd" class="sub"></div>
+  <canvas id="cv" width="1754" height="1240"></canvas>
+  <div class="row">
+    <button class="btn" id="bDl">⬇️ Unduh Sertifikat</button>
+    <button class="btn g" id="bNew">Siswa Baru</button>
+  </div>
+  <div class="note">Sertifikat tersimpan sebagai gambar PNG.</div>
+</div>
+
+<!-- DIBLOKIR (TAB GANDA) -->
+<div id="sBlock" class="card hide" style="text-align:center">
+  <div style="font-size:3rem">🚫</div>
+  <h2>Aplikasi tidak dapat dibuka</h2>
+  <p class="sub">Kuis ini sedang berjalan di tab lain. Aplikasi tidak bisa dibuka di tab baru. Tutup tab ini dan kembali ke tab kuis.</p>
+  <button class="btn g" onclick="location.reload()">Coba lagi</button>
+</div>
+
+</div>
+
+<!-- Overlay pelanggaran -->
+<div class="ov hide" id="ovLeave">
+  <div class="box">
+    <div class="em">⚠️</div>
+    <h2>Kamu keluar dari halaman kuis!</h2>
+    <p id="lvMsg"></p>
+    <p style="color:#64748b;font-size:.9rem">Waktu tetap berjalan.</p>
+    <button class="btn" id="bBack">Kembali ke Kuis</button>
+  </div>
+</div>
+
+<!-- Overlay konfirmasi end test -->
+<div class="ov hide" id="ovEnd">
+  <div class="box">
+    <div class="em">🏁</div>
+    <h2>Akhiri kuis sekarang?</h2>
+    <p id="endMsg"></p>
+    <div class="row">
+      <button class="btn g" id="bCancel">Lanjut mengerjakan</button>
+      <button class="btn" id="bYes" style="background:var(--bad)">Ya, End Test</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const TOTAL=20, DUR=25*60*1000, MAXV=3;
+const KEY='cbt_analisis_data_k8_state', LOCK='cbt_analisis_data_k8_lock';
+const tabId=Math.random().toString(36).slice(2);
+
+/* ================= BANK SOAL (jawaban benar selalu o[0], posisinya diacak saat kuis) ================= */
+const BANK=[
+{q:'Pak Budi mencatat nilai ulangan tiga siswa: 85, 70, dan 90. Ia lalu menghitung dan menulis "rata-rata nilai = 81,7". Tulisan "rata-rata nilai = 81,7" merupakan...',o:['Informasi, karena sudah diolah dan bermakna','Data mentah, karena berupa angka','Data primer, karena ditulis sendiri','Kuesioner, karena berisi hitungan']},
+{q:'Perbedaan data dan informasi yang paling tepat adalah...',o:['Data adalah fakta mentah yang belum diolah, informasi adalah data yang sudah diolah sehingga bermakna','Data sudah bermakna, sedangkan informasi masih berupa fakta mentah','Data selalu berupa angka, informasi selalu berupa gambar','Data dan informasi sama persis sehingga bisa saling menggantikan']},
+{q:'Kantin sekolah menerima 120 lembar jawaban survei menu favorit yang menumpuk dan acak. Langkah paling cerdas untuk mengetahui menu terfavorit adalah...',o:['Mengelompokkan jawaban berdasarkan menu lalu menghitung jumlahnya','Membaca satu per satu sambil menebak hasilnya','Membuang separuh kertas agar lebih cepat','Menyerahkan tumpukan kertas tanpa diolah']},
+{q:'Rani mengamati langsung kebiasaan siswa membuang sampah di halaman sekolah selama jam istirahat. Teknik pengumpulan datanya adalah...',o:['Observasi','Wawancara','Kuesioner','Studi dokumen']},
+{q:'Dimas bertanya langsung kepada penjaga kantin tentang menu yang paling cepat habis. Teknik pengumpulan data yang digunakan Dimas adalah...',o:['Wawancara','Observasi','Kuesioner','Studi dokumen']},
+{q:'OSIS ingin mengetahui pendapat 300 siswa tentang fasilitas sekolah secara cepat dan efisien. Teknik pengumpulan data yang paling tepat adalah...',o:['Kuesioner berupa formulir daring','Wawancara satu per satu selama berhari-hari','Mengamati siswa secara diam-diam','Membaca buku pelajaran siswa']},
+{q:'Siti mengambil data jumlah penduduk dari laporan dan situs resmi pemerintah. Teknik pengumpulan data yang ia pakai adalah...',o:['Studi dokumen','Observasi','Wawancara','Kuesioner']},
+{q:'Andi membuat survei sendiri dan menyebarkannya ke teman sekelas untuk mengetahui hobi mereka. Data yang diperoleh Andi termasuk...',o:['Data primer, karena dikumpulkan sendiri','Data sekunder, karena berasal dari teman','Data sekunder, karena berupa survei','Data kuantitatif, karena berupa hobi']},
+{q:'Sebuah kelompok memakai data jumlah penduduk dari BPS untuk tugas mereka. Data tersebut termasuk...',o:['Data sekunder, karena diambil dari sumber yang sudah ada','Data primer, karena dikumpulkan sendiri','Data primer, karena bersifat resmi','Data mentah yang tidak boleh diolah']},
+{q:'Manakah kelompok data berikut yang seluruhnya termasuk data kualitatif?',o:['Warna favorit, hobi, jenis kelamin','Tinggi badan, berat badan, usia','Nilai ulangan, jumlah saudara, suhu','Warna favorit, nilai ulangan, hobi']},
+{q:'Pernyataan yang benar tentang data kuantitatif adalah...',o:['Berupa angka yang dapat dihitung, misalnya jumlah saudara dan nilai ulangan','Berupa kategori atau kata, misalnya merek sepatu','Tidak dapat diolah menjadi rata-rata','Hanya dapat diperoleh melalui wawancara']},
+{q:'Perhatikan tabel hasil survei menu favorit: Bakso = 45, Nasi goreng = 40, Mie ayam = 35. Pernyataan yang benar adalah...',o:['Jumlah responden 120 dan menu terfavorit adalah bakso','Jumlah responden 80 dan menu terfavorit adalah bakso','Jumlah responden 120 dan menu terfavorit adalah mie ayam','Jumlah responden 45 dan menu terfavorit adalah nasi goreng']},
+{q:'Urutan langkah pengolahan data yang benar adalah...',o:['Bersihkan → urutkan → hitung → sajikan → tafsirkan','Hitung → bersihkan → tafsirkan → urutkan → sajikan','Sajikan → hitung → bersihkan → urutkan → tafsirkan','Tafsirkan → sajikan → hitung → urutkan → bersihkan']},
+{q:'Data waktu istirahat (menit) selama lima hari: 6, 7, 7, 8, 10. Rata-rata waktu istirahat adalah...',o:['7,6 menit','7 menit','8 menit','38 menit']},
+{q:'Data nilai lima siswa: 4, 9, 2, 7, 5. Median data tersebut adalah...',o:['5','2','5,4','7']},
+{q:'Jumlah es teh yang terjual selama seminggu: 8, 9, 7, 8, 10, 8, 9. Modus data tersebut adalah...',o:['8','9','7','10']},
+{q:'Guru ingin menjumlahkan nilai pada sel A1 sampai A5 di spreadsheet. Rumus yang tepat adalah...',o:['=SUM(A1:A5)','=AVERAGE(A1:A5)','=COUNT(A1:A5)','=MAX(A1:A5)']},
+{q:'Kolom C2 sampai C11 berisi nilai ulangan siswa. Rumus untuk mencari nilai terbesar adalah...',o:['=MAX(C2:C11)','=MIN(C2:C11)','=SUM(C2:C11)','=AVERAGE(C2:C11)']},
+{q:'Sel A1 sampai A6 berisi: 5, 8, abc, 9, 10, dan satu sel kosong. Hasil rumus =COUNT(A1:A6) adalah...',o:['4','6','5','32']},
+{q:'Nilai ulangan sekelas: 78, 80, 80, 85, 850. Angka 850 kemungkinan salah ketik. Tindakan yang tepat sebelum menghitung rata-rata adalah...',o:['Memeriksa dan memperbaiki data (membersihkan data) agar hasil akurat','Tetap memakai 850 karena data tidak boleh diubah','Menghapus semua data lainnya','Langsung menyajikan hasil tanpa pemeriksaan']}
+];
+
+/* ================= UTILITAS ================= */
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let S=null,timerI=null,hbI=null,away=false,bc=null;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}};
+const active=()=>S&&!S.done;
+function show(id){['sStart','sQuiz','sRes','sBlock'].forEach(x=>$('#'+x).classList.toggle('hide',x!==id))}
+
+/* ================= BUAT SOAL (posisi kunci jawaban acak & seimbang) ================= */
+function buildQuestions(){
+  const pos=shuffle(Array.from({length:TOTAL},(_,i)=>i%4)); // tiap posisi A-D muncul 5x, urutannya acak
+  return shuffle(BANK.map((_,i)=>i)).map((bi,k)=>{
+    const b=BANK[bi],c=pos[k],wrong=shuffle(b.o.slice(1)),opts=[];
+    for(let p=0,w=0;p<4;p++) opts.push(p===c?b.o[0]:wrong[w++]);
+    return {bi,o:opts,c};
+  });
+}
+
+/* ================= MULAI ================= */
+function start(){
+  const nm=$('#nm').value.trim().replace(/\s+/g,' '),kl=$('#kl').value.trim();
+  if(nm.length<3){$('#err').textContent='Nama minimal 3 huruf.';return}
+  if(!kl){$('#err').textContent='Kelas wajib diisi.';return}
+  $('#err').textContent='';
+  const now=Date.now();
+  S={name:nm,cls:kl,start:now,end:now+DUR,qs:buildQuestions(),ans:Array(TOTAL).fill(null),cur:0,viol:0,done:false};
+  save();
+  try{const e=document.documentElement;(e.requestFullscreen||e.webkitRequestFullscreen||function(){}).call(e)}catch(e){}
+  runQuiz();
+}
+function runQuiz(){
+  away=false;claim();
+  hbI=setInterval(claim,1000);
+  show('sQuiz');
+  $('#who').textContent=S.name+' · Kelas '+S.cls;
+  render();tick();
+  timerI=setInterval(tick,250);
+}
+
+/* ================= TAMPIL SOAL ================= */
+function render(){
+  const q=S.qs[S.cur],L='ABCD';
+  $('#qn').textContent='Soal '+(S.cur+1)+' dari '+TOTAL;
+  $('#qt').textContent=BANK[q.bi].q;
+  $('#pg').style.width=(S.ans.filter(a=>a!==null).length/TOTAL*100)+'%';
+  $('#qo').innerHTML=q.o.map((t,i)=>`<button class="opt${S.ans[S.cur]===i?' sel':''}" data-i="${i}"><span class="l">${L[i]}</span><span></span></button>`).join('');
+  document.querySelectorAll('#qo .opt').forEach((b,i)=>{b.lastChild.textContent=q.o[i];b.onclick=()=>{S.ans[S.cur]=i;save();render()}});
+  $('#bPrev').disabled=S.cur===0;
+  $('#bNext').disabled=S.cur===TOTAL-1;
+  $('#gd').innerHTML=S.qs.map((_,i)=>`<button class="${S.ans[i]!==null?'done':''}${i===S.cur?' cur':''}" data-i="${i}">${i+1}</button>`).join('');
+  document.querySelectorAll('#gd button').forEach(b=>b.onclick=()=>{S.cur=+b.dataset.i;save();render()});
+}
+function tick(){
+  if(!active())return;
+  const left=S.end-Date.now();
+  if(left<=0){$('#tm').textContent='00:00';finish('Waktu habis. Kuis berakhir otomatis.');return}
+  const m=Math.floor(left/60000),s=Math.floor(left%60000/1000);
+  $('#tm').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  $('#tm').classList.toggle('low',left<5*60000);
+}
+
+/* ================= SELESAI ================= */
+function finish(reason){
+  if(!S||S.done)return;
+  S.done=true;S.reason=reason||'';S.finishedAt=Date.now();
+  S.benar=S.qs.filter((q,i)=>S.ans[i]===q.c).length;
+  S.nilai=Math.round(S.benar/TOTAL*100);
+  save();
+  clearInterval(timerI);clearInterval(hbI);
+  releaseLock();
+  $('#ovLeave').classList.add('hide');$('#ovEnd').classList.add('hide');
+  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+  showResult();
+}
+function predikat(n){return n>=85?'Sangat Baik':n>=70?'Baik':n>=56?'Cukup':'Perlu Belajar Lagi'}
+function showResult(){
+  show('sRes');
+  $('#rs').textContent=S.nilai;
+  $('#rd').textContent='Benar '+S.benar+' dari '+TOTAL+' soal · Predikat: '+predikat(S.nilai)+(S.reason?' · '+S.reason:'');
+  drawCert($('#cv'));
+}
+
+/* ================= SERTIFIKAT ================= */
+function drawCert(cv){
+  const c=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2;
+  const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,'#fffdf5');g.addColorStop(1,'#eef2ff');
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+  c.strokeStyle='#4f46e5';c.lineWidth=14;c.strokeRect(40,40,W-80,H-80);
+  c.strokeStyle='#d4a017';c.lineWidth=4;c.strokeRect(70,70,W-140,H-140);
+  c.fillStyle='#d4a017';
+  [[70,70],[W-70,70],[70,H-70],[W-70,H-70]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,16,0,7);c.fill()});
+  c.textAlign='center';c.textBaseline='alphabetic';
+  c.fillStyle='#1e1b4b';c.font='bold 92px Georgia, serif';c.fillText('SERTIFIKAT',cx,260);
+  c.fillStyle='#d4a017';c.font='bold 34px Georgia, serif';c.fillText('H A S I L   K U I S   I N F O R M A T I K A',cx,325);
+  c.fillStyle='#64748b';c.font='italic 36px Georgia, serif';c.fillText('Diberikan kepada:',cx,430);
+  let fs=96;c.font='italic bold '+fs+'px Georgia, serif';
+  while(c.measureText(S.name).width>1350&&fs>40){fs-=4;c.font='italic bold '+fs+'px Georgia, serif'}
+  c.fillStyle='#4f46e5';c.fillText(S.name,cx,545);
+  c.strokeStyle='#d4a017';c.lineWidth=3;c.beginPath();c.moveTo(cx-560,575);c.lineTo(cx+560,575);c.stroke();
+  c.fillStyle='#1e1b4b';c.font='38px Georgia, serif';
+  c.fillText('Kelas '+S.cls+' · Informatika Kelas 8',cx,650);
+  c.fillText('telah menyelesaikan kuis materi',cx,715);
+  c.font='bold 46px Georgia, serif';c.fillText('Analisis Data: Pengelompokan & Pengolahan',cx,785);
+  c.fillStyle='#4f46e5';c.beginPath();
+  if(c.roundRect)c.roundRect(cx-300,830,600,200,28);else c.rect(cx-300,830,600,200);
+  c.fill();
+  c.fillStyle='#fff';c.font='30px Georgia, serif';c.fillText('NILAI AKHIR',cx,880);
+  c.font='bold 100px Georgia, serif';c.fillText(String(S.nilai),cx,975);
+  c.font='28px Georgia, serif';c.fillText('Benar '+S.benar+' dari '+TOTAL+' soal',cx,1015);
+  c.fillStyle='#1e1b4b';c.font='bold 40px Georgia, serif';c.fillText('Predikat: '+predikat(S.nilai),cx,1100);
+  const tgl=new Date(S.finishedAt).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const dur=Math.max(1,Math.round((S.finishedAt-S.start)/60000));
+  c.fillStyle='#64748b';c.font='28px Georgia, serif';
+  c.fillText(tgl+' · Durasi pengerjaan '+dur+' menit',cx,1160);
+}
+function download(){
+  const cv=$('#cv');
+  cv.toBlob(b=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b);
+    a.download='Sertifikat_'+S.name.replace(/[^\w]+/g,'_')+'.png';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  },'image/png');
+}
+
+/* ================= ANTI CHEATING ================= */
+function claim(){try{localStorage.setItem(LOCK,JSON.stringify({id:tabId,t:Date.now()}))}catch(e){}}
+function releaseLock(){try{const l=JSON.parse(localStorage.getItem(LOCK)||'null');if(l&&l.id===tabId)localStorage.removeItem(LOCK)}catch(e){}}
+function lockedByOther(){try{const l=JSON.parse(localStorage.getItem(LOCK)||'null');return !!(l&&l.id!==tabId&&Date.now()-l.t<5000)}catch(e){return false}}
+
+// Siswa keluar dari halaman kuis (pindah tab, buka tab baru, ganti aplikasi)
+function leave(){
+  if(!active()||away)return;
+  away=true;S.viol++;save();
+  if(S.viol>=MAXV){finish('Kuis diakhiri otomatis karena keluar dari halaman kuis '+MAXV+' kali.');return}
+  $('#lvMsg').textContent='Pelanggaran '+S.viol+' dari '+MAXV+'. Jika mencapai '+MAXV+', kuis berakhir otomatis.';
+  $('#ovLeave').classList.remove('hide');
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)leave()});
+window.addEventListener('blur',leave);
+$('#bBack').onclick=()=>{away=false;$('#ovLeave').classList.add('hide')};
+
+// Cegah copy/paste/klik kanan/pintasan
+['contextmenu','copy','cut','paste','dragstart','selectstart'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.tagName==='INPUT')return;e.preventDefault()}));
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase(),ctrl=e.ctrlKey||e.metaKey;
+  if(k==='f12'||k==='printscreen'||(ctrl&&['c','v','x','a','u','s','p','i','j'].includes(k))||(ctrl&&e.shiftKey&&['i','j','c'].includes(k))){
+    if(e.target.tagName==='INPUT'&&!active())return;
+    e.preventDefault();
+  }
+});
+// Peringatan saat menutup / refresh
+window.addEventListener('beforeunload',e=>{if(active()){e.preventDefault();e.returnValue=''}});
+window.addEventListener('pagehide',releaseLock);
+
+// Tab baru yang membuka aplikasi yang sama langsung diblokir
+try{
+  bc=new BroadcastChannel('cbt_analisis_data_k8');
+  bc.onmessage=m=>{
+    if(m.data==='hello'&&active())bc.postMessage('busy');
+    if(m.data==='busy'&&!active()){block()}
+  };
+}catch(e){}
+function block(){clearInterval(timerI);clearInterval(hbI);show('sBlock')}
+
+/* ================= TOMBOL ================= */
+$('#bStart').onclick=start;
+$('#nm').addEventListener('keydown',e=>{if(e.key==='Enter')$('#kl').focus()});
+$('#kl').addEventListener('keydown',e=>{if(e.key==='Enter')start()});
+$('#bPrev').onclick=()=>{if(S.cur>0){S.cur--;save();render()}};
+$('#bNext').onclick=()=>{if(S.cur<TOTAL-1){S.cur++;save();render()}};
+$('#bEnd').onclick=()=>{
+  const un=S.ans.filter(a=>a===null).length;
+  $('#endMsg').textContent=un?('Masih ada '+un+' soal yang belum dijawab.'):'Semua soal sudah dijawab.';
+  $('#ovEnd').classList.remove('hide');
+};
+$('#bCancel').onclick=()=>$('#ovEnd').classList.add('hide');
+$('#bYes').onclick=()=>finish('');
+$('#bDl').onclick=download;
+$('#bNew').onclick=()=>{try{localStorage.removeItem(KEY)}catch(e){}S=null;$('#nm').value='';$('#kl').value='';show('sStart')};
+
+/* ================= INISIALISASI ================= */
+(function init(){
+  if(lockedByOther()){show('sBlock');return}
+  if(bc)bc.postMessage('hello');
+  const old=load();
+  if(old&&old.qs&&old.qs.length===TOTAL){
+    S=old;
+    if(S.done){showResult();return}
+    if(Date.now()>=S.end){finish('Waktu habis. Kuis berakhir otomatis.');return}
+    // halaman dimuat ulang saat kuis berjalan = dihitung 1 pelanggaran
+    S.viol++;save();
+    if(S.viol>=MAXV){finish('Kuis diakhiri otomatis karena keluar dari halaman kuis '+MAXV+' kali.');return}
+    runQuiz();
+    away=true;
+    $('#lvMsg').textContent='Halaman dimuat ulang. Pelanggaran '+S.viol+' dari '+MAXV+'.';
+    $('#ovLeave').classList.remove('hide');
+    return;
+  }
+  show('sStart');
+})();
+</script>
+</body>
+</html>
